@@ -2,19 +2,22 @@
 #pragma once
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
+#include <vector>
+
+#define numButtons 3
 
 class Menu
 {
 public:
-	enum MenuTask { PlayNormal, PlaySpecial, Exit, None };
-	MenuTask draw(sf::RenderWindow &window);
+	void draw(sf::RenderWindow &window);
+	void initialSetup();
+	int selectionIndex;
 
-	struct MenuButton
-	{
-		//represents menu button shape and its corresponding action
-		sf::Rect<int> shape;
-		MenuTask action;
-	};
+	void moveUp();
+	void moveDown();
 
-
+private:
+	sf::Font _font;
+	sf::Text _buttonText[numButtons];
+	sf::Text _titleText;
 };

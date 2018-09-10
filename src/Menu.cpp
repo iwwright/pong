@@ -1,33 +1,79 @@
 //Ian Wright 9/9/18
 #include "../include/Menu.h"
 
-Menu::MenuTask Menu::draw(sf::RenderWindow &window)
+void Menu::draw(sf::RenderWindow &window)
 {
 	//creates black background for menu
 	window.clear(sf::Color::Black);
-
-	//load font
-	sf::Font font;
-	if (!font.loadFromFile("../src/assets/AtariClassic-Regular.ttf"))
+	window.draw(_titleText);
+	for (int i = 0; i < numButtons; i++)
 	{
-		// TODO add error...
+		window.draw(_buttonText[i]);
+	}
+
+
+	
+	//draws buttons on menu that can be selected
+	//this->drawButtons(window, font);
+
+	//TODO change to function call for menu interaction
+}
+
+void Menu::initialSetup()
+{
+	//load font
+	if (!_font.loadFromFile("../src/assets/AtariClassic-Regular.ttf"))
+	{
 		throw;
 	}
 
-	sf::Text text;
-	// select the font
-	text.setFont(font); // font is a sf::Font
-	// set the string to display
-	text.setString("PONG");
-	// set the character size
-	text.setCharacterSize(48); // in pixels, not points!
-	// set the color
-	text.setFillColor(sf::Color::White);
-	// set the text style
-	text.setStyle(sf::Text::Underlined);
+	// select the font and sets many various attributes of text
+	_titleText.setFont(_font); // font is a sf::Font
+	_titleText.setString("PONG");
+	_titleText.setCharacterSize(60); // in pixels, not points!
+	_titleText.setFillColor(sf::Color::White);
+	_titleText.setStyle(sf::Text::Underlined);
+	//centers text on screen, 800 should be replaced if window size is changed
+	_titleText.setPosition((800 / 2.0) - (_titleText.getLocalBounds().width / 2.0), 50);
 
-	window.draw(text);
+	//creates button for playing the normal version of the game (no bonus features)
+	_buttonText[0].setFont(_font);
+	_buttonText[0].setString("Play Classic Mode");
+	_buttonText[0].setCharacterSize(20);
+	_buttonText[0].setFillColor(sf::Color::Cyan); //cyan since it is currently selected
+	_buttonText[0].setPosition((800 / 2.0) - (_buttonText[0].getLocalBounds().width / 2.0), 220);
 
-	//TODO change to function call for menu interaction
-	return None;
+	//creates button for playing the bonus version of the game
+	_buttonText[1].setFont(_font);
+	_buttonText[1].setString("Play Special Mode");
+	_buttonText[1].setCharacterSize(20);
+	_buttonText[1].setFillColor(sf::Color::White);
+	_buttonText[1].setPosition((800 / 2.0) - (_buttonText[1].getLocalBounds().width / 2.0), 260);
+
+	//creates buttonText[2] button
+	_buttonText[2].setFont(_font);
+	_buttonText[2].setString("Exit");
+	_buttonText[2].setCharacterSize(20);
+	_buttonText[2].setFillColor(sf::Color::White);
+	_buttonText[2].setPosition((800 / 2.0) - (_buttonText[2].getLocalBounds().width / 2.0), 300);
+
+	selectionIndex = 0;
+}
+
+
+
+void Menu::moveUp()
+{
+	_buttonText[selectionIndex].setFillColor(sf::Color::White);
+	selectionIndex = (selectionIndex ? selectionIndex : numButtons) - 1;
+
+	_buttonText[selectionIndex].setFillColor(sf::Color::Cyan);
+}
+
+void Menu::moveDown()
+{
+	_buttonText[selectionIndex].setFillColor(sf::Color::White);
+	selectionIndex = (selectionIndex == numButtons - 1 ? 0 : selectionIndex + 1);
+
+	_buttonText[selectionIndex].setFillColor(sf::Color::Cyan);
 }
