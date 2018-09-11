@@ -2,7 +2,6 @@
 #pragma once
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
-#include <vector>
 
 #define numButtons 3
 
@@ -10,14 +9,14 @@ class Menu
 {
 public:
 	void draw(sf::RenderWindow &window);
-	void initialSetup();
+	void initialSetup(sf::Font menuFont);
 	int selectionIndex;
+	sf::Font font;
 
 	void moveUp();
 	void moveDown();
 
 private:
-	sf::Font _font;
 	sf::Text _buttonText[numButtons];
 	sf::Text _titleText;
 };
