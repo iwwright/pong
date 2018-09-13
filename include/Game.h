@@ -2,6 +2,7 @@
 #pragma once	//better way of writing include guards
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
+#include "SFML/System.hpp"
 #include "Menu.h"
 #include "PongGame.h"
 
@@ -16,6 +17,7 @@ public:
 private:
 	static bool isExiting();
 	static void gameLoop();
+	static void processInput();
 	static void updateView();
 	static PongGame startPong();
 
@@ -29,4 +31,6 @@ private:
 
 	static Menu _mainMenu;
 	static PongGame _pong;
+	static sf::Clock _clock;
+	static int _gameTimeFactor;
 };

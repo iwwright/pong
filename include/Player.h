@@ -4,6 +4,7 @@
 #include "SFML/Graphics.hpp"
 
 #define scoreOffset 100
+#define paddleSpeed 2
 
 class Player
 {
@@ -14,6 +15,7 @@ public:
 
 	bool addPoint(int scoreToWin);
 	void updateText(sf::Font &font);
+	void movePaddle(int direction, float delta);
 
 	sf::RectangleShape paddle;
 	sf::Text scoreText;

@@ -16,7 +16,7 @@ PongGame::PongGame(int type, sf::Font scoreFont)
 		sf::RectangleShape tmp;
 		tmp.setFillColor(sf::Color(185, 185, 185));
 		tmp.setSize(sf::Vector2f(10, 15));
-		tmp.setPosition((800 / 2.0) - (tmp.getLocalBounds().width / 2.0), 30 * i + 7.5);
+		tmp.setPosition((800 / 2.0f) - (tmp.getLocalBounds().width / 2.0f), 30 * i + 7.5f);
 		objects.passiveShapes.push_back(tmp);
 	}
 
@@ -25,7 +25,7 @@ PongGame::PongGame(int type, sf::Font scoreFont)
 		sf::RectangleShape tmp;
 		tmp.setFillColor(sf::Color(185, 185, 185));
 		tmp.setSize(sf::Vector2f(800, 15));
-		tmp.setPosition((800 / 2.0) - (tmp.getLocalBounds().width / 2.0), (600-15)*i);
+		tmp.setPosition((800 / 2.0f) - (tmp.getLocalBounds().width / 2.0f), (600-15)*i);
 		objects.activeShapes.push_back(tmp);
 	}
 	
@@ -46,8 +46,8 @@ void PongGame::draw(sf::RenderWindow &window)
 	for (int i = 0; i < numActiveShapes; i++)
 		window.draw(objects.activeShapes[i]);
 
-	//window.draw(objects.humanPlayer.paddle);
-	//window.draw(objects.aiPlayer.paddle);
+	window.draw(objects.humanPlayer.paddle);
+	window.draw(objects.aiPlayer.paddle);
 	objects.humanPlayer.updateText(font);
 	objects.aiPlayer.updateText(font);
 
