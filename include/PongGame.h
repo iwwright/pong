@@ -8,19 +8,28 @@
 
 #define numPassiveShapes 20
 #define numActiveShapes 2
+#define aiResponseDistance 150
 
 class PongGame
 {
 public:
 	PongGame() = default;
-	PongGame(sf::Font scoreFont, short side, short type, sf::Color humanColor, sf::Color aiColor);
+	PongGame(sf::Font scoreFont, short side, short type, sf::Color humanColor, sf::Color aiColor, float difficulty=1.f);
 	~PongGame();
 
-	void draw(sf::RenderWindow &window);
-	void update(float delta, float gameTimeFactor);
-	void processInputs(float delta, float gameTimeFactor);
+	void initVars();
 
-	struct PongObjects 
+	void draw(sf::RenderWindow &window);
+	void update(float delta, int scoreToWin);
+	bool processInputs(float delta);
+
+	sf::Font font;
+	
+	//pointers to the Player object on the corresponding side of the court, assigned in initVars() since Game::_pong is static
+	Player *left;
+	Player *right;
+	
+	struct PongObjects
 	{
 		Ball ball;
 
@@ -34,17 +43,19 @@ public:
 		Player aiPlayer;
 	} objects;
 
-	sf::Font font;
-
-	Player *left;
-	Player *right;
-	
-
 private:
-	//true if human player's paddle is on the left side of the screen
-	bool _isHumanLeft;
-	//true if the pointers *left and *right have been set
-	bool _objsSet;
+	//various strings of text that show up at different points during the game, initialized in initVars()
+	sf::Text _notInPlayText;
+	sf::Text _endGameMessage;
+	sf::Text _endGameHelp;
+
+	//stores whether game has ended
+	bool _gameOver = false;
+
+	void _makeEndGameText();
+	void _reset();
+	void _updateAI(float delta);
+
 	//void normalGameSetup();
 	//void specialGameSetup();
 

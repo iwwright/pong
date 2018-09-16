@@ -10,7 +10,7 @@
 #include <cmath>
 #include <random>
 
-#define maxInitialAngle 30
+#define maxInitialAngle 25
 #define ballSpeed 200
 
 class Ball

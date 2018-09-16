@@ -4,7 +4,7 @@
 #include "SFML/Graphics.hpp"
 
 #define scoreOffset 100
-#define paddleSpeed 400
+#define paddleSpeed 200
 
 class Player
 {

@@ -30,17 +30,19 @@ Player::~Player()
 {
 }
 
-//increments player's score, updates the text to display, and returns whether score < scoreToWin
+//increments player's score, updates the text to display, and returns whether score == scoreToWin
 bool Player::addPoint(int scoreToWin)
 {
 	score = score + 1;
+	scoreText.setString(std::to_string(score));
+	//position can't be centered until font is set, for whatever reason the bounding box is off center so 1.5 fixes it
+	scoreText.setPosition(((800 / 2.0f) - (scoreText.getLocalBounds().width / 1.5f)) + side * 140, 30);
 
-	return (score < scoreToWin);
+	return (score == scoreToWin);
 }
 
 void Player::updateText(sf::Font &font)
 {
-	//scoreFont = font;
 	scoreText.setFont(font);
 	scoreText.setString(std::to_string(score));
 	//position can't be centered until font is set, for whatever reason the bounding box is off center so 1.5 fixes it
@@ -52,7 +54,7 @@ void Player::movePaddle(int direction, float delta)
 	sf::Vector2f pos = paddle.getPosition();
 	if (pos.y >= 85 && pos.y <= 515)
 	{
-		float newPos = pos.y + direction * paddleSpeed * delta;
+		float newPos = pos.y + direction * paddleSpeed * delta * _difficulty;
 		
 		if (newPos < 85)
 			newPos = 85;

@@ -105,19 +105,19 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 
 
 /*flips ball's direction over X axis, changing whether the ball is moving up or down,
-adds a small random perturbation (between -2 and +2 degrees) for an element of uncertainty*/
+adds a small random perturbation (between -5 and +5 degrees) for an element of uncertainty*/
 void Ball::bounceY()
 {
-	_direction = ((360 - _direction) + (rand() % 6) - 3) % 360;
+	_direction = ((360 - _direction) + (rand() % 11) - 5) % 360;
 	//rotate the shape so that any calls to shape.move are in the correct direction
 	shape.setRotation(_direction);
 }
 
 /*flips ball's direction over Y axis, changing whether the ball is moving left or right,
-adds a small random perturbation (between -2 and +2 degrees) for an element of uncertainty*/
+adds a small random perturbation (between -5 and +5 degrees) for an element of uncertainty*/
 void Ball::bounceX()
 {
-	_direction = ((180 - _direction + 360) + ((rand() % 6) - 3)) % 360;
+	_direction = ((180 - _direction + 360) + ((rand() % 11) - 5)) % 360;
 	//rotate the shape so that any calls to shape.move are in the correct direction
 	shape.setRotation(_direction);
 
