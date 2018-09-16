@@ -1,16 +1,8 @@
 //Ian Wright 9/9/18
 #include "../include/Menu.h"
 
-void Menu::draw(sf::RenderWindow &window)
+Menu::~Menu()
 {
-	//creates black background for menu
-	window.clear(sf::Color::Black);
-	
-	//draws all text/buttons
-	window.draw(_titleText);
-	for (int i = 0; i < numButtons; i++)
-		window.draw(_buttonText[i]);
-
 }
 
 void Menu::initialSetup(sf::Font menuFont)
@@ -50,6 +42,17 @@ void Menu::initialSetup(sf::Font menuFont)
 	selectionIndex = 0;
 }
 
+void Menu::draw(sf::RenderWindow &window)
+{
+	//creates black background for menu
+	window.clear(sf::Color::Black);
+	
+	//draws all text/buttons
+	window.draw(_titleText);
+	for (int i = 0; i < numButtons; i++)
+		window.draw(_buttonText[i]);
+
+}
 
 
 void Menu::moveUp()

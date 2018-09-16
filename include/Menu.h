@@ -8,8 +8,12 @@
 class Menu
 {
 public:
-	void draw(sf::RenderWindow &window);
+	//Menu() = default;
+	~Menu();
+
 	void initialSetup(sf::Font menuFont);
+	void draw(sf::RenderWindow &window);
+
 	int selectionIndex;
 	sf::Font font;
 
