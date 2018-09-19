@@ -5,7 +5,7 @@ Menu::~Menu()
 {
 }
 
-void Menu::initialSetup(sf::Font menuFont)
+void Menu::init(sf::Font menuFont)
 {
 	font = menuFont;
 
@@ -39,7 +39,7 @@ void Menu::initialSetup(sf::Font menuFont)
 	_buttonText[2].setFillColor(sf::Color::White);
 	_buttonText[2].setPosition((800 / 2.f) - (_buttonText[2].getLocalBounds().width / 2.f), 360);
 
-	selectionIndex = 0;
+	_selectionIndex = 0;
 }
 
 void Menu::draw(sf::RenderWindow &window)
@@ -57,16 +57,31 @@ void Menu::draw(sf::RenderWindow &window)
 
 void Menu::moveUp()
 {
-	_buttonText[selectionIndex].setFillColor(sf::Color::White);
-	selectionIndex = (selectionIndex ? selectionIndex : numButtons) - 1;
+	_buttonText[_selectionIndex].setFillColor(sf::Color::White);
+	_selectionIndex = (_selectionIndex ? _selectionIndex : numButtons) - 1;
 
-	_buttonText[selectionIndex].setFillColor(sf::Color::Cyan);
+	_buttonText[_selectionIndex].setFillColor(sf::Color::Cyan);
 }
 
 void Menu::moveDown()
 {
-	_buttonText[selectionIndex].setFillColor(sf::Color::White);
-	selectionIndex = (selectionIndex == numButtons - 1 ? 0 : selectionIndex + 1);
+	_buttonText[_selectionIndex].setFillColor(sf::Color::White);
+	_selectionIndex = (_selectionIndex == numButtons - 1 ? 0 : _selectionIndex + 1);
 
-	_buttonText[selectionIndex].setFillColor(sf::Color::Cyan);
+	_buttonText[_selectionIndex].setFillColor(sf::Color::Cyan);
+}
+
+int Menu::processInput(sf::Event curEvent)
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		moveUp();
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		moveDown();
+
+	if (curEvent.key.code == sf::Keyboard::Enter && curEvent.type == sf::Event::KeyReleased)
+		return _selectionIndex;
+
+	return -1;
+
 }

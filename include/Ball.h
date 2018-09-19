@@ -11,7 +11,6 @@
 #include <random>
 
 #define maxInitialAngle 25
-#define ballSpeed 200
 
 class Ball
 {
@@ -30,15 +29,27 @@ public:
 	bool isInPlay;
 	sf::CircleShape shape;
 
+	struct BallTrail
+	{
+		bool enabled;
+		sf::Vector2f coordinates[5];
+		sf::CircleShape shapes[5];
+
+	} trail;
+
+	bool toggleTrail();
+
 private:
 	sf::Color _leftColor;
 	sf::Color _rightColor;
 
-	float _velocity;
+	int _velocity;
+	float _acceleration;
 	int _direction;
-
 
 	double _directionAsRadians();
 	bool _isDirectionLeft();
+	void _trailUpdate(sf::Vector2f ballPos);
+	float _distance(sf::Vector2f u, sf::Vector2f v);
 
 };

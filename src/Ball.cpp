@@ -10,8 +10,14 @@ Ball::Ball(sf::Color leftCol, sf::Color rightCol)
 	_leftColor = leftCol;
 	_rightColor = rightCol;
 
+	//sets ball velocity
+	_velocity = 160;
+
 	//seed random number generator
-	srand(time(0));
+	srand((int)time(0));
+
+	//allow ball trail to be drawn
+	trail.enabled = true;
 
 	this->reset();
 }
@@ -27,7 +33,7 @@ when side = 0 the ball moves to right and when side = 1 the ball moves to the le
 void Ball::reset(int side)
 {
 	shape.setPosition(sf::Vector2f(400, 300));
-	_velocity = 0;
+	_acceleration = 1.f;
 
 	//generates random angle in degrees between (360 - maxInitialAngle) and (360 + maxinitialAngle) 
 	_direction = 360 + ((rand() % (maxInitialAngle*2 + 1)) - maxInitialAngle);
@@ -48,14 +54,29 @@ void Ball::reset(int side)
 	//ball is not in play until user hits enter
 	isInPlay = false;
 
+	//perform initial steps for ball trail
+	if (trail.enabled)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			trail.coordinates[i] = sf::Vector2f(0.0f, 0.0f);
+			trail.shapes[i].setFillColor(sf::Color(255, 255, 255, 175 - 30 * i));
+			trail.shapes[i].setRadius(10.f);
+			trail.shapes[i].setOrigin(sf::Vector2f(10, 10));
+			trail.shapes[i].setPosition(400.f, 300.f);
+		}
+	}
+
 }
 
 
 void Ball::draw(sf::RenderWindow &window)
 {
-	if (isInPlay)
+	if (isInPlay && trail.enabled)
 	{
-		//draw ball's trail
+		//draws all balls in trail except 0th since it is used to store main ball's location
+		for (int i = 1; i < 5; i++)
+			window.draw(trail.shapes[i]);
 	}
 
 	//draw ball
@@ -75,15 +96,21 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 	if (isInPlay)
 	{
 		sf::Vector2f pos = shape.getPosition();
+
 		if (int(pos.y) <= 25 || int(pos.y) >= 575)
 			bounceY();
 
-		if (_isDirectionLeft() && pos.x < 51 && pos.x > 49 && abs(left.y - pos.y) < 70)
+		if (_isDirectionLeft() && pos.x < 51 && pos.x > 49 && abs(left.y - pos.y) < 75)
 			bounceX();
 		else if (!_isDirectionLeft() && pos.x > 749 && pos.x < 751 && abs(right.y - pos.y) < 70)
 			bounceX();
 
-		shape.move(sf::Vector2f(cos(_directionAsRadians())  * delta * ballSpeed, sin(_directionAsRadians())  * delta * ballSpeed));
+		//now that color is updated through bounce, update trail if it's enabled and if the ball has moved far enough
+		if (trail.enabled && _distance(pos, trail.coordinates[0]) > 4.f * _acceleration)
+			_trailUpdate(pos);
+
+		//move ball in new direction
+		shape.move(sf::Vector2f(cos(_directionAsRadians())  * delta * _velocity * _acceleration, sin(_directionAsRadians())  * delta * _velocity * _acceleration));
 
 		//return value indicating what to do if someone has scored
 		if (pos.x <= 2)
@@ -126,8 +153,38 @@ void Ball::bounceX()
 		shape.setFillColor(_rightColor);
 	else
 		shape.setFillColor(_leftColor);
+
+	//increases acceleration so that game speeds up with each successful paddle hit
+	_acceleration += 0.05f;
 }
 
+void Ball::_trailUpdate(sf::Vector2f ballPos)
+{
+	sf::Color ballCol = shape.getFillColor();
+
+	for (int i = 4; i > -1; i--)
+	{
+		if (i == 0)
+		{
+			trail.coordinates[i] = ballPos;
+			trail.shapes[i].setPosition(ballPos);
+		}
+		else
+		{
+			trail.coordinates[i] = trail.coordinates[i-1];
+			trail.shapes[i].setPosition(trail.coordinates[i]);
+			ballCol.a = 150 - 30 * i;
+			trail.shapes[i].setFillColor(ballCol);
+		}
+	}
+}
+
+
+bool Ball::toggleTrail()
+{
+	trail.enabled = !(trail.enabled);
+	return trail.enabled;
+}
 
 
 double Ball::_directionAsRadians()
@@ -138,4 +195,9 @@ double Ball::_directionAsRadians()
 bool Ball::_isDirectionLeft()
 {
 	return (_direction >= 90 && _direction <= 270);
+}
+
+float Ball::_distance(sf::Vector2f u, sf::Vector2f v)
+{
+	return sqrt(pow(u.x - v.x, 2) + pow(u.y - v.y, 2));
 }

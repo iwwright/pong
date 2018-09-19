@@ -8,7 +8,6 @@
 
 #define numPassiveShapes 20
 #define numActiveShapes 2
-#define aiResponseDistance 150
 
 class PongGame
 {
@@ -17,7 +16,7 @@ public:
 	PongGame(sf::Font scoreFont, short side, short type, sf::Color humanColor, sf::Color aiColor, float difficulty=1.f);
 	~PongGame();
 
-	void initVars();
+	void init();
 
 	void draw(sf::RenderWindow &window);
 	void update(float delta, int scoreToWin);
@@ -55,6 +54,9 @@ private:
 	void _makeEndGameText();
 	void _reset();
 	void _updateAI(float delta);
+
+	//AI can move paddle when the distance between its paddle and the ball is less than the below value
+	float _aiResponseDistance;
 
 	//void normalGameSetup();
 	//void specialGameSetup();

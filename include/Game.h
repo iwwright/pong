@@ -4,6 +4,7 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/System.hpp"
 #include "Menu.h"
+#include "OptionSelect.h"
 #include "PongGame.h"
 #include "Player.h"
 
@@ -22,16 +23,18 @@ private:
 	static void processInput();
 	static void updateView();
 
-	//defines states of the game in the order they should occur
+	//defines states of the game 
 	enum GameState
 	{
-		Uninitialized, InMenu, Paused, Playing, Finished, Exiting
+		Uninitialized, InMenu, SpecialMode, Paused, Playing, Finished, Exiting
 	};
 
 	static GameState _gameState;
 	static sf::RenderWindow _window;
 
 	static Menu _mainMenu;
+	static OptionSelect _options;
+
 	static PongGame _pong;
 	static sf::Clock _clock;
 };

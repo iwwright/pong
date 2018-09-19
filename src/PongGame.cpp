@@ -12,6 +12,8 @@ PongGame::PongGame(sf::Font scoreFont, short side, short type, sf::Color humanCo
 	objects.humanPlayer = Player(true, side, type, humanColor);
 	objects.aiPlayer = Player(false, -1 * side, type, aiColor, difficulty);
 
+	_aiResponseDistance = 1.25f * difficulty * 300;
+
 	//creates passive shapes, which are currently just rectangles that divide the window in half
 	for (int i = 0; i < numPassiveShapes; i++)
 	{
@@ -37,7 +39,7 @@ PongGame::~PongGame()
 {
 }
 
-void PongGame::initVars()
+void PongGame::init()
 {
 	//for whatever reason text has to be setup outside of constructor so that the font doesn't cause problems
 	objects.humanPlayer.updateText(font);
@@ -196,7 +198,7 @@ void PongGame::_updateAI(float delta)
 	sf::Vector2f paddlePos = objects.aiPlayer.paddle.getPosition();
 
 	//only allow ai to move paddle after ball gets close enough to make winning possible
-	if (abs(paddlePos.x - ballPos.x) < aiResponseDistance)
+	if (abs(paddlePos.x - ballPos.x) < _aiResponseDistance)
 	{
 		if (paddlePos.y < ballPos.y)
 			objects.aiPlayer.movePaddle(1, delta);

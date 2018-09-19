@@ -2,6 +2,7 @@
 #pragma once
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
+#include <vector>
 
 #define numButtons 3
 
@@ -11,16 +12,19 @@ public:
 	//Menu() = default;
 	~Menu();
 
-	void initialSetup(sf::Font menuFont);
+	void init(sf::Font menuFont);
 	void draw(sf::RenderWindow &window);
-
-	int selectionIndex;
+	int processInput(sf::Event curEvent);
+	
 	sf::Font font;
 
 	void moveUp();
 	void moveDown();
 
 private:
+	int _selectionIndex;
 	sf::Text _buttonText[numButtons];
 	sf::Text _titleText;
+
+
 };
