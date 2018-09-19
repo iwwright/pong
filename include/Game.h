@@ -26,7 +26,7 @@ private:
 	//defines states of the game 
 	enum GameState
 	{
-		Uninitialized, InMenu, SpecialMode, Paused, Playing, Finished, Exiting
+		Uninitialized, InMenu, Options, Paused, Playing, Finished, Exiting
 	};
 
 	static GameState _gameState;

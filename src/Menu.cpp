@@ -1,5 +1,5 @@
 //Ian Wright 9/9/18
-#include "../include/Menu.h"
+#include "Menu.h"
 
 Menu::~Menu()
 {

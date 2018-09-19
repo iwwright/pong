@@ -1,5 +1,5 @@
 //Ian Wright 9/11/18
-#include "../include/Player.h"
+#include "Player.h"
 
 
 

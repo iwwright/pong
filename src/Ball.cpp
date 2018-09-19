@@ -1,5 +1,5 @@
 //Ian Wright 9/15/18
-#include "../include/Ball.h"
+#include "Ball.h"
 #include <iostream>
 
 Ball::Ball(sf::Color leftCol, sf::Color rightCol)

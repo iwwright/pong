@@ -1,5 +1,5 @@
 //Ian Wright 9/11/18
-#include "../include/PongGame.h"
+#include "PongGame.h"
 #include <iostream>
 
 
