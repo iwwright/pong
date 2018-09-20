@@ -1,5 +1,5 @@
 //Ian Wright 9/9/18
-// pong.cpp : Defines console application's entrypoint
+//pong.cpp: Defines console application's entrypoint
 
 #include "GameApplication.h"
 

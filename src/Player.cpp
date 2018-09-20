@@ -19,9 +19,9 @@ Player::Player(bool human, short argSide, short paddleType, sf::Color argColor, 
 	scoreText.setFillColor(sf::Color(185, 185, 185));
 
 	paddle.setFillColor(paddleColor);
-	paddle.setSize(sf::Vector2f(20, 140));
-	paddle.setOrigin(sf::Vector2f(10, 70));
-	paddle.setPosition(400.f + side * 370, 300.f);
+	paddle.setSize(sf::Vector2f(15, 140));
+	paddle.setOrigin(sf::Vector2f(7.5f, 70));
+	paddle.setPosition(400.f + side * 385, 300);
 
 }
 
@@ -36,7 +36,7 @@ bool Player::addPoint(int scoreToWin)
 	score = score + 1;
 	scoreText.setString(std::to_string(score));
 	//position can't be centered until font is set, for whatever reason the bounding box is off center so 1.5 fixes it
-	scoreText.setPosition(((800 / 2.0f) - (scoreText.getLocalBounds().width / 1.5f)) + side * 140, 30);
+	scoreText.setPosition((400.f - (scoreText.getLocalBounds().width / 1.5f)) + side * 140, 30);
 
 	return (score == scoreToWin);
 }
@@ -46,7 +46,7 @@ void Player::updateText(sf::Font &font)
 	scoreText.setFont(font);
 	scoreText.setString(std::to_string(score));
 	//position can't be centered until font is set, for whatever reason the bounding box is off center so 1.5 fixes it
-	scoreText.setPosition(((800 / 2.0f) - (scoreText.getLocalBounds().width / 1.5f)) + side*140, 30);
+	scoreText.setPosition((400.f - (scoreText.getLocalBounds().width / 1.5f)) + side*140, 30);
 }
 
 void Player::movePaddle(int direction, float delta)

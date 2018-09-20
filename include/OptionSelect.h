@@ -35,7 +35,7 @@ public:
 		std::vector<std::string> choices;
 
 		int index;
-		int height;
+		float height;
 
 	};
 private:

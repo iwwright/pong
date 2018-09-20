@@ -8,6 +8,8 @@
 #include "PongGame.h"
 #include "Player.h"
 
+#define aspectRatio 1.25f
+
 //header file defines static class to act as global interface for the game
 //only one instance of this class
 class Game
@@ -22,6 +24,7 @@ private:
 	static void gameLoop();
 	static void processInput();
 	static void updateView();
+	static void preserveAspectRatio(int width, int height);
 
 	//defines states of the game 
 	enum GameState
@@ -31,10 +34,12 @@ private:
 
 	static GameState _gameState;
 	static sf::RenderWindow _window;
+	static sf::View _view;
+	static sf::Clock _clock;
 
 	static Menu _mainMenu;
 	static OptionSelect _options;
-
 	static PongGame _pong;
-	static sf::Clock _clock;
+
+	
 };

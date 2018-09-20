@@ -12,25 +12,39 @@ PongGame::PongGame(sf::Font scoreFont, short side, short type, sf::Color humanCo
 	objects.humanPlayer = Player(true, side, type, humanColor);
 	objects.aiPlayer = Player(false, -1 * side, type, aiColor, difficulty);
 
+	//make ai response distance scale with difficulty
 	_aiResponseDistance = 1.25f * difficulty * 300;
 
-	//creates passive shapes, which are currently just rectangles that divide the window in half
-	for (int i = 0; i < numPassiveShapes; i++)
+	//creates passive shapes (don't affect ball) 
+	for (int i = 0; i < 20; i++)
 	{
-		sf::RectangleShape tmp;
-		tmp.setFillColor(sf::Color(185, 185, 185));
-		tmp.setSize(sf::Vector2f(10, 15));
-		tmp.setPosition((800 / 2.0f) - (tmp.getLocalBounds().width / 2.0f), 30 * i + 7.5f);
-		objects.passiveShapes.push_back(tmp);
+		//dotted lines to divide court in half
+		sf::RectangleShape center;
+		center.setFillColor(sf::Color(185, 185, 185));
+		center.setSize(sf::Vector2f(10, 15));
+		center.setPosition(400.f - (center.getLocalBounds().width / 2.0f), 30 * i + 7.5f);
+		objects.passiveShapes.push_back(center);
+		//dotted lines to show left and right edges of court (useful when window size is changed)
+		sf::RectangleShape left;
+		left.setFillColor(sf::Color(60, 60, 60));
+		left.setSize(sf::Vector2f(5, 15));
+		left.setPosition(0.f - (left.getLocalBounds().width / 2.0f), 30 * i + 7.5f);
+		objects.passiveShapes.push_back(left);
+		sf::RectangleShape right;
+		right.setFillColor(sf::Color(60, 60, 60));
+		right.setSize(sf::Vector2f(5, 15));
+		right.setPosition(800.f - (right.getLocalBounds().width / 2.0f), 30 * i + 7.5f);
+		objects.passiveShapes.push_back(right);
 	}
 
-	//creates active shapes, currently just border of the game
+	//creates active shapes (ball bounces off shape)
 	for (int i = 0; i < numActiveShapes; i++)
 	{
+		//makes top and bottom borders for court
 		sf::RectangleShape tmp;
 		tmp.setFillColor(sf::Color(185, 185, 185));
 		tmp.setSize(sf::Vector2f(800, 15));
-		tmp.setPosition((800 / 2.0f) - (tmp.getLocalBounds().width / 2.0f), (600 - 15.f)*i);
+		tmp.setPosition(400.f - (tmp.getLocalBounds().width / 2.0f), (600 - 15.f)*i);
 		objects.activeShapes.push_back(tmp);
 	}
 }
@@ -45,11 +59,12 @@ void PongGame::init()
 	objects.humanPlayer.updateText(font);
 	objects.aiPlayer.updateText(font);
 
+	//text to let player know how to make the ball start moving before each point
 	_notInPlayText.setFont(font);
 	_notInPlayText.setString("Press Space");
 	_notInPlayText.setCharacterSize(45);
 	_notInPlayText.setFillColor(sf::Color::White);
-	_notInPlayText.setPosition((800 / 2.f) - (_notInPlayText.getLocalBounds().width / 2.f), 150);
+	_notInPlayText.setPosition(400.f - (_notInPlayText.getLocalBounds().width / 2.f), 150);
 
 	//so that left/right players can be determined easily for update()
 	if (objects.humanPlayer.side == -1)
@@ -84,8 +99,8 @@ void PongGame::update(float delta, int scoreToWin)
 			_gameOver = right->addPoint(scoreToWin);
 		
 		//reset paddle locations
-		objects.humanPlayer.paddle.setPosition(400.f + objects.humanPlayer.side * 370, 300.f);
-		objects.aiPlayer.paddle.setPosition(400.f + objects.aiPlayer.side * 370, 300.f);
+		objects.humanPlayer.paddle.setPosition(400.f + objects.humanPlayer.side * 385, 300);
+		objects.aiPlayer.paddle.setPosition(400.f + objects.aiPlayer.side * 385, 300);
 	}
 	
 	if (_gameOver)
@@ -97,14 +112,9 @@ void PongGame::update(float delta, int scoreToWin)
 void PongGame::draw(sf::RenderWindow &window)
 {
 	window.clear(sf::Color::Black);
-
-
-	for (int i = 0; i < numActiveShapes; i++)
-		window.draw(objects.activeShapes[i]);
-
+	//draw paddles and scores
 	window.draw(objects.humanPlayer.paddle);
 	window.draw(objects.aiPlayer.paddle);
-
 	window.draw(objects.humanPlayer.scoreText);
 	window.draw(objects.aiPlayer.scoreText);
 	
@@ -117,6 +127,9 @@ void PongGame::draw(sf::RenderWindow &window)
 	{
 		for (int i = 0; i < numPassiveShapes; i++)
 			window.draw(objects.passiveShapes[i]);
+		
+		for (int i = 0; i < numActiveShapes; i++)
+			window.draw(objects.activeShapes[i]);
 
 		objects.ball.draw(window);
 
@@ -140,20 +153,21 @@ bool PongGame::processInputs(float delta)
 	}
 	else
 	{
+		//restart the game
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
 			_reset();
 
+		//return true to signal that gameState needs to be changed to inMenu
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			return true;
 	}
 
-	return false;
-	
+	return false;	
 }
 
 void PongGame::_makeEndGameText()
 {
-
+	//determine wijnner and set endGameMessage strijng/color appropriately
 	if (objects.humanPlayer.score > objects.aiPlayer.score) 
 	{
 		_endGameMessage.setString("YOU WIN!");
@@ -164,17 +178,16 @@ void PongGame::_makeEndGameText()
 		_endGameMessage.setString("YOU LOSE!");
 		_endGameMessage.setFillColor(sf::Color::Red);
 	}
-
 	_endGameMessage.setFont(font);
 	_endGameMessage.setCharacterSize(80);
-	_endGameMessage.setPosition((800 / 2.f) - (_endGameMessage.getLocalBounds().width / 1.92f), 180);
+	_endGameMessage.setPosition(400.f - (_endGameMessage.getLocalBounds().width / 1.92f), 180);
 
 	//instructions on how to reset the game
 	_endGameHelp.setFont(font);
 	_endGameHelp.setCharacterSize(30);
 	_endGameHelp.setString("[ENTER]  - Try Again\n[ESCAPE] - Main Menu");
 	_endGameHelp.setFillColor(sf::Color::White);
-	_endGameHelp.setPosition((800 / 2.f) - (_endGameHelp.getLocalBounds().width / 1.9f), 315);
+	_endGameHelp.setPosition(400.f - (_endGameHelp.getLocalBounds().width / 1.9f), 315);
 
 }
 
@@ -185,8 +198,8 @@ void PongGame::_reset()
 	objects.humanPlayer.updateText(font);
 	objects.aiPlayer.updateText(font);
 
-	objects.humanPlayer.paddle.setPosition(400.f + objects.humanPlayer.side * 370, 300.f);
-	objects.aiPlayer.paddle.setPosition(400.f + objects.aiPlayer.side * 370, 300.f);
+	objects.humanPlayer.paddle.setPosition(400.f + objects.humanPlayer.side * 370, 300);
+	objects.aiPlayer.paddle.setPosition(400.f + objects.aiPlayer.side * 370, 300);
 
 	_gameOver = false;
 	objects.ball.reset();

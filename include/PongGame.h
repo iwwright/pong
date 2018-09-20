@@ -6,14 +6,14 @@
 #include "Player.h"
 #include <vector>
 
-#define numPassiveShapes 20
+#define numPassiveShapes 60
 #define numActiveShapes 2
 
 class PongGame
 {
 public:
 	PongGame() = default;
-	PongGame(sf::Font scoreFont, short side, short type, sf::Color humanColor, sf::Color aiColor, float difficulty=1.f);
+	PongGame(sf::Font scoreFont, short side, short type, sf::Color humanColor, sf::Color aiColor, float difficulty=1);
 	~PongGame();
 
 	void init();
@@ -43,7 +43,6 @@ public:
 	} objects;
 
 private:
-	//various strings of text that show up at different points during the game, initialized in initVars()
 	sf::Text _notInPlayText;
 	sf::Text _endGameMessage;
 	sf::Text _endGameHelp;
@@ -57,8 +56,4 @@ private:
 
 	//AI can move paddle when the distance between its paddle and the ball is less than the below value
 	float _aiResponseDistance;
-
-	//void normalGameSetup();
-	//void specialGameSetup();
-
 };

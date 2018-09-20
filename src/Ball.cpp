@@ -4,7 +4,7 @@
 
 Ball::Ball(sf::Color leftCol, sf::Color rightCol)
 {
-	shape.setRadius(10.f);
+	shape.setRadius(10);
 	shape.setOrigin(sf::Vector2f(10, 10));
 
 	_leftColor = leftCol;
@@ -49,7 +49,7 @@ void Ball::reset(int side)
 		shape.setFillColor(_leftColor);
 
 	//relatively rotate ball for easy movement
-	shape.setRotation(_direction);
+	shape.setRotation(float(_direction));
 
 	//ball is not in play until user hits enter
 	isInPlay = false;
@@ -61,9 +61,9 @@ void Ball::reset(int side)
 		{
 			trail.coordinates[i] = sf::Vector2f(0.0f, 0.0f);
 			trail.shapes[i].setFillColor(sf::Color(255, 255, 255, 175 - 30 * i));
-			trail.shapes[i].setRadius(10.f);
+			trail.shapes[i].setRadius(10);
 			trail.shapes[i].setOrigin(sf::Vector2f(10, 10));
-			trail.shapes[i].setPosition(400.f, 300.f);
+			trail.shapes[i].setPosition(400.f, 300);
 		}
 	}
 
@@ -100,9 +100,9 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 		if (int(pos.y) <= 25 || int(pos.y) >= 575)
 			bounceY();
 
-		if (_isDirectionLeft() && pos.x < 51 && pos.x > 49 && abs(left.y - pos.y) < 75)
+		if (_isDirectionLeft() && pos.x < 33 && pos.x > 32 && abs(left.y - pos.y) < 75.f)
 			bounceX();
-		else if (!_isDirectionLeft() && pos.x > 749 && pos.x < 751 && abs(right.y - pos.y) < 70)
+		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 768 && abs(right.y - pos.y) < 75.f)
 			bounceX();
 
 		//now that color is updated through bounce, update trail if it's enabled and if the ball has moved far enough
@@ -110,7 +110,7 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 			_trailUpdate(pos);
 
 		//move ball in new direction
-		shape.move(sf::Vector2f(cos(_directionAsRadians())  * delta * _velocity * _acceleration, sin(_directionAsRadians())  * delta * _velocity * _acceleration));
+		shape.move(float(cos(_directionAsRadians())  * delta * _velocity * _acceleration), float(sin(_directionAsRadians())  * delta * _velocity * _acceleration));
 
 		//return value indicating what to do if someone has scored
 		if (pos.x <= 2)
@@ -137,7 +137,7 @@ void Ball::bounceY()
 {
 	_direction = ((360 - _direction) + (rand() % 11) - 5) % 360;
 	//rotate the shape so that any calls to shape.move are in the correct direction
-	shape.setRotation(_direction);
+	shape.setRotation(float(_direction));
 }
 
 /*flips ball's direction over Y axis, changing whether the ball is moving left or right,
@@ -146,7 +146,7 @@ void Ball::bounceX()
 {
 	_direction = ((180 - _direction + 360) + ((rand() % 11) - 5)) % 360;
 	//rotate the shape so that any calls to shape.move are in the correct direction
-	shape.setRotation(_direction);
+	shape.setRotation(float(_direction));
 
 	//make ball color the same as the paddle it just bounced off of
 	if (_isDirectionLeft())

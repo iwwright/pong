@@ -1,4 +1,5 @@
 //Ian Wright 9/9/18
+//GameApplication.cpp: defines static Game class for use as Game Application Layer
 #include "GameApplication.h"
 #include <iostream>
 
@@ -27,8 +28,12 @@ void Game::init(void)
 	if (!font.loadFromFile("../src/assets/AtariClassic-Regular.ttf"))
 		throw;
 
-	//create main window
-	_window.create(sf::VideoMode(800, 600, 32), "Pong", sf::Style::Close);
+	//create main window and view for resizing, uses default viewport
+	_window.create(sf::VideoMode(800, 600, 32), "Pong");//, sf::Style::Close);
+	_view.reset(sf::FloatRect(0, 0, 800, 600));
+	_window.setView(_view);
+
+	//assigns value for _gameState and initializes _mainMenu
 	_gameState = Game::InMenu;
 	_mainMenu.init(Game::font);
 
@@ -57,9 +62,6 @@ void Game::processInput()
 		{
 			switch (_mainMenu.processInput(Event))
 			{
-			case -1:
-				//do nothing in this case
-				break;
 			case 0:
 				//classic mode has been selected so start game with certain parameters
 				_gameState = Game::Playing;
@@ -84,9 +86,6 @@ void Game::processInput()
 		{
 			switch (_options.processInput(Event))
 			{
-			case -1:
-				//do nothing in this case
-				break;
 			case 0:
 				//Enter has been hit so gather parameters and start game
 				_gameState = Game::Playing;
@@ -109,6 +108,8 @@ void Game::processInput()
 		if (Event.type == sf::Event::Closed)
 			_gameState = Game::Exiting;
 
+		if (Event.type == sf::Event::Resized)
+			preserveAspectRatio(Event.size.width, Event.size.height);
 	}
 
 	//outside of loop so that Keyboard state can immediately trigger a response
@@ -148,14 +149,40 @@ void Game::updateView()
 	_window.display();
 }
 
+void Game::preserveAspectRatio(int width, int height)
+{
+	sf::FloatRect viewport;
+	viewport.width = 1.f;
+	viewport.height = 1.f;
+
+	if (width > height * aspectRatio)
+	{
+		viewport.width = (height * aspectRatio) / width;
+		viewport.left = (1.f - viewport.width) / 2.f;
+
+	}
+	else if (width < height * aspectRatio)
+	{
+		viewport.height = width / (height * aspectRatio);
+		viewport.top = (1.f - viewport.height) / 2.f;
+	}
+	
+	_view.setViewport(viewport);
+	_window.setView(_view);
+}
+
 
 //initalizes the variables at runtime (since they are static)
+sf::Font Game::font;
+float Game::gameTimeFactor = 2.f;
+
 Game::GameState Game::_gameState = Uninitialized;
 sf::RenderWindow Game::_window;
-sf::Font Game::font;
+sf::View Game::_view;
+sf::Clock Game::_clock; // starts the clock
 Menu Game::_mainMenu;
 OptionSelect Game::_options;
 PongGame Game::_pong;
-sf::Clock Game::_clock; // starts the clock
-float Game::gameTimeFactor = 2.f;
+
+
 

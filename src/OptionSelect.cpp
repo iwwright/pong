@@ -54,13 +54,13 @@ void OptionSelect::init(sf::Font menuFont)
 	//performs all common steps for each member of _allOptions
 	for (int i = 0; i < numOptions; i++)
 	{
-		_allOptions[i].height = 180 + 50 * i;
+		_allOptions[i].height = 180.f + 50 * i;
 		_allOptions[i].index = 0;
 
 		_allOptions[i].name.setFont(font);
 		_allOptions[i].name.setCharacterSize(20);
 		_allOptions[i].name.setFillColor(sf::Color::White);
-		_allOptions[i].name.setOrigin(_allOptions[i].name.getLocalBounds().width, 0.f);
+		_allOptions[i].name.setOrigin(_allOptions[i].name.getLocalBounds().width, 0);
 		_allOptions[i].name.setPosition(350.f, _allOptions[i].height);
 
 		_allOptions[i].selection.setFont(font);
@@ -79,7 +79,7 @@ void OptionSelect::init(sf::Font menuFont)
 	_instructions.setCharacterSize(30);
 	_instructions.setFillColor(sf::Color::White);
 	_instructions.setString("Press Enter to Start\nPress Escape to go Back");
-	_instructions.setPosition(400.f - (_instructions.getLocalBounds().width / 2.f), 50.f);
+	_instructions.setPosition(400.f - (_instructions.getLocalBounds().width / 2.f), 50);
 
 }
 
