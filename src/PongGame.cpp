@@ -64,7 +64,20 @@ void PongGame::init()
 	_notInPlayText.setString("Press Space");
 	_notInPlayText.setCharacterSize(45);
 	_notInPlayText.setFillColor(sf::Color::White);
-	_notInPlayText.setPosition(400.f - (_notInPlayText.getLocalBounds().width / 2.f), 150);
+	_notInPlayText.setPosition(390.f - (_notInPlayText.getLocalBounds().width / 2.f), 150);
+
+	//text to let player know the game is paused
+	_pausedText.setFont(font);
+	_pausedText.setString("GAME PAUSED");
+	_pausedText.setCharacterSize(45);
+	_pausedText.setFillColor(sf::Color::Cyan);
+	_pausedText.setPosition(390.f - (_pausedText.getLocalBounds().width / 2.f), 150);
+	//possible actions while paused
+	_pausedHelp.setFont(font);
+	_pausedHelp.setString("[SPACE]-Resume\n[ESC]-Quit");
+	_pausedHelp.setCharacterSize(30);
+	_pausedHelp.setFillColor(sf::Color::Cyan);
+	_pausedHelp.setPosition(390.f - (_pausedHelp.getLocalBounds().width / 2.f), 210);
 
 	//so that left/right players can be determined easily for update()
 	if (objects.humanPlayer.side == -1)
@@ -84,7 +97,8 @@ void PongGame::init()
 
 void PongGame::update(float delta, int scoreToWin)
 {
-	if (_gameOver) return;
+	if (_gameOver || _paused)
+		return;
 
 	sf::Vector2f leftPos = left->paddle.getPosition();
 	sf::Vector2f rightPos = right->paddle.getPosition();
@@ -133,13 +147,24 @@ void PongGame::draw(sf::RenderWindow &window)
 
 		objects.ball.draw(window);
 
-		if (!objects.ball.isInPlay)
+		if (!objects.ball.isInPlay && ! _paused)
 			window.draw(_notInPlayText);
+
+		if (_paused)
+		{
+			window.draw(_pausedText);
+			window.draw(_pausedHelp);
+		}
+			
 	}
 }
 
 bool PongGame::processInputs(float delta)
 {
+	//pausing stops any moving objects
+	if (_paused)
+		delta = 0;
+
 	if (!_gameOver)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -148,8 +173,28 @@ bool PongGame::processInputs(float delta)
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			objects.humanPlayer.movePaddle(1, delta);
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !objects.ball.isInPlay)
+		{
 			objects.ball.isInPlay = true;
+			_spaceHeld = true;
+		}
+
+		//only lets player toggle pause if the ball is in play
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && objects.ball.isInPlay)
+		{
+			//escape has to be released before toggling pause again
+			if (!_spaceHeld)
+			{
+				_spaceHeld = true;
+				_paused = !_paused;
+			}
+		}
+		else
+			_spaceHeld = false;
+
+		//allow player to quit if game is paused
+		if (_paused && sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			return true;
 	}
 	else
 	{
@@ -165,9 +210,16 @@ bool PongGame::processInputs(float delta)
 	return false;	
 }
 
+void PongGame::pause()
+{
+	//only pauses game when ball is in play
+	if (objects.ball.isInPlay)
+		_paused = true;
+}
+
 void PongGame::_makeEndGameText()
 {
-	//determine wijnner and set endGameMessage strijng/color appropriately
+	//determine winner and set endGameMessage string/color appropriately
 	if (objects.humanPlayer.score > objects.aiPlayer.score) 
 	{
 		_endGameMessage.setString("YOU WIN!");

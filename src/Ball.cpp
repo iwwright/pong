@@ -97,12 +97,12 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 	{
 		sf::Vector2f pos = shape.getPosition();
 
-		if (int(pos.y) <= 25 || int(pos.y) >= 575)
+		if (int(pos.y) <= 25.3f || int(pos.y) >= 574.7f)
 			bounceY();
 
-		if (_isDirectionLeft() && pos.x < 33 && pos.x > 32 && abs(left.y - pos.y) < 75.f)
+		if (_isDirectionLeft() && pos.x < 33 && pos.x > 31.5f && abs(left.y - pos.y) < 75.f)
 			bounceX();
-		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 768 && abs(right.y - pos.y) < 75.f)
+		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 768.5f && abs(right.y - pos.y) < 75.f)
 			bounceX();
 
 		//now that color is updated through bounce, update trail if it's enabled and if the ball has moved far enough
@@ -154,8 +154,9 @@ void Ball::bounceX()
 	else
 		shape.setFillColor(_leftColor);
 
-	//increases acceleration so that game speeds up with each successful paddle hit
-	_acceleration += 0.05f;
+	//increases acceleration so that game speeds up with each successful paddle hit until it reaches 2.0
+	if (_acceleration < 2.f) 
+		_acceleration += 0.05f;
 }
 
 void Ball::_trailUpdate(sf::Vector2f ballPos)

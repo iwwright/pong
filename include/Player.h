@@ -3,7 +3,7 @@
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 
-#define paddleSpeed 200
+#define paddleSpeed 100
 
 class Player
 {

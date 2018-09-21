@@ -20,7 +20,7 @@ public:
 	void moveVertical(int direction);
 	void moveHorizontal(int direction);
 
-	//get functions to retrieve selected options in Game.cpp
+	//get functions to retrieve selected options in GameApplication.cpp
 	sf::Color getHumanColor();
 	sf::Color getAIColor();
 	float getDifficulty();

@@ -78,7 +78,7 @@ void OptionSelect::init(sf::Font menuFont)
 	_instructions.setFont(font);
 	_instructions.setCharacterSize(30);
 	_instructions.setFillColor(sf::Color::White);
-	_instructions.setString("Press Enter to Start\nPress Escape to go Back");
+	_instructions.setString("[ENTER] = Start\n[ESC] Back");
 	_instructions.setPosition(400.f - (_instructions.getLocalBounds().width / 2.f), 50);
 
 }
@@ -132,7 +132,7 @@ void OptionSelect::moveVertical(int direction)
 	//direction has to be -1 or +1
 	_selectionIndex = (_selectionIndex + direction + numOptions) % numOptions;
 
-	//sets the currently selection option to cyan
+	//sets the currently selected option to cyan
 	_allOptions[_selectionIndex].name.setFillColor(sf::Color::Cyan);
 	_allOptions[_selectionIndex].selection.setFillColor(sf::Color::Cyan);
 }

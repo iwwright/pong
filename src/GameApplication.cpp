@@ -64,10 +64,10 @@ void Game::processInput()
 			{
 			case 0:
 				//classic mode has been selected so start game with certain parameters
-				_gameState = Game::Playing;
+				_gameState = Game::InGame;
 				gameTimeFactor = 2.f;
 
-				_pong = PongGame(Game::font, -1, 0, sf::Color::Blue, sf::Color::Red, 0.5f);
+				_pong = PongGame(Game::font, -1, 0, sf::Color::Blue, sf::Color::Red, 1.0f);
 				_pong.init();
 				break;
 			case 1:
@@ -88,7 +88,7 @@ void Game::processInput()
 			{
 			case 0:
 				//Enter has been hit so gather parameters and start game
-				_gameState = Game::Playing;
+				_gameState = Game::InGame;
 				//update gameTimeFactor with speed parameter
 				gameTimeFactor = 2.f * _options.getSpeed();
 
@@ -107,16 +107,22 @@ void Game::processInput()
 
 		if (Event.type == sf::Event::Closed)
 			_gameState = Game::Exiting;
+		//pauses game if window is minimized or resized while in play
+		if ((Event.type == sf::Event::LostFocus || Event.type == sf::Event::Resized) && _gameState == Game::InGame)
+			_pong.pause();
 
 		if (Event.type == sf::Event::Resized)
 			preserveAspectRatio(Event.size.width, Event.size.height);
+
+
 	}
 
 	//outside of loop so that Keyboard state can immediately trigger a response
-	if (_gameState == Game::Playing)
+	if (_gameState == Game::InGame)
 	{
 		//returns elapsed time and resets the clock
 		float delta = _clock.restart().asSeconds() * gameTimeFactor;
+		int result = _pong.processInputs(delta);
 
 		if (_pong.processInputs(delta))
 			_gameState = Game::InMenu;
@@ -124,7 +130,6 @@ void Game::processInput()
 			_pong.update(delta, 11);
 		
 	}
-		
 }
 
 void Game::updateView()
@@ -141,7 +146,7 @@ void Game::updateView()
 		_options.draw(_window);
 		break;
 
-	case Game::Playing:
+	case Game::InGame:
 		_pong.draw(_window);
 
 		break;
@@ -155,6 +160,7 @@ void Game::preserveAspectRatio(int width, int height)
 	viewport.width = 1.f;
 	viewport.height = 1.f;
 
+	//adjusts viewport so that 800x600 window is always centered and scaled properly
 	if (width > height * aspectRatio)
 	{
 		viewport.width = (height * aspectRatio) / width;

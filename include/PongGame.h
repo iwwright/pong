@@ -22,6 +22,7 @@ public:
 	void update(float delta, int scoreToWin);
 	bool processInputs(float delta);
 
+	void pause();
 	sf::Font font;
 	
 	//pointers to the Player object on the corresponding side of the court, assigned in initVars() since Game::_pong is static
@@ -49,6 +50,12 @@ private:
 
 	//stores whether game has ended
 	bool _gameOver = false;
+
+	//stores whether game is paused
+	bool _paused = false;
+	bool _spaceHeld;
+	sf::Text _pausedText;
+	sf::Text _pausedHelp;
 
 	void _makeEndGameText();
 	void _reset();
