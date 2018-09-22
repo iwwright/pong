@@ -1,5 +1,6 @@
 //Ian Wright 9/18/18
 #include "OptionSelect.h"
+#include <iostream>
 
 OptionSelect::~OptionSelect()
 {
@@ -61,12 +62,12 @@ void OptionSelect::init(sf::Font menuFont)
 		_allOptions[i].name.setCharacterSize(20);
 		_allOptions[i].name.setFillColor(sf::Color::White);
 		_allOptions[i].name.setOrigin(_allOptions[i].name.getLocalBounds().width, 0);
-		_allOptions[i].name.setPosition(350.f, _allOptions[i].height);
+		_allOptions[i].name.setPosition(370.f, _allOptions[i].height);
 
 		_allOptions[i].selection.setFont(font);
 		_allOptions[i].selection.setCharacterSize(20);
 		_allOptions[i].selection.setFillColor(sf::Color::White);
-		_allOptions[i].selection.setPosition(450.f, _allOptions[i].height);
+		_allOptions[i].selection.setPosition(470.f, _allOptions[i].height);
 		_allOptions[i].selection.setString(_allOptions[i].choices.at(0));
 
 	}
@@ -76,11 +77,25 @@ void OptionSelect::init(sf::Font menuFont)
 
 	//instructions on how to start the game or return to the menu
 	_instructions.setFont(font);
-	_instructions.setCharacterSize(30);
+	_instructions.setCharacterSize(45);
 	_instructions.setFillColor(sf::Color::White);
-	_instructions.setString("[ENTER] = Start\n[ESC] Back");
-	_instructions.setPosition(400.f - (_instructions.getLocalBounds().width / 2.f), 50);
+	_instructions.setString("[ENTER] = Start\n  [ESC] = Back");
+	_instructions.setPosition(390.f - (_instructions.getLocalBounds().width / 2.f), 50);
 
+
+	//load all sounds into buffers
+	if (!_moveBuffer.loadFromFile("../src/assets/menuMove.wav"))
+		throw;
+	if (!_selectBuffer.loadFromFile("../src/assets/menuSelect.wav"))
+		throw;
+	if (!_backBuffer.loadFromFile("../src/assets/menuBack.wav"))
+		throw;
+
+	//set buffer for each sound object
+	_move.setBuffer(_moveBuffer);
+	_select.setBuffer(_selectBuffer);
+	_select.setVolume(70.f);
+	_back.setBuffer(_backBuffer);
 }
 
 
@@ -115,10 +130,17 @@ int OptionSelect::processInput(sf::Event curEvent)
 		moveHorizontal(-1);
 
 	if (curEvent.key.code == sf::Keyboard::Enter && curEvent.type == sf::Event::KeyPressed)
+	{
+		_select.play();
 		return 0;
+	}
+		
 
 	if (curEvent.key.code == sf::Keyboard::Escape && curEvent.type == sf::Event::KeyPressed)
+	{
+		_back.play();
 		return 1;
+	}
 
 	return -1;
 }
@@ -135,6 +157,8 @@ void OptionSelect::moveVertical(int direction)
 	//sets the currently selected option to cyan
 	_allOptions[_selectionIndex].name.setFillColor(sf::Color::Cyan);
 	_allOptions[_selectionIndex].selection.setFillColor(sf::Color::Cyan);
+
+	_move.play();
 }
 
 void OptionSelect::moveHorizontal(int direction)
@@ -147,6 +171,8 @@ void OptionSelect::moveHorizontal(int direction)
 
 	//update the selection text to display the new value
 	_allOptions[_selectionIndex].selection.setString(_allOptions[_selectionIndex].choices.at(_allOptions[_selectionIndex].index));
+
+	_move.play();
 }
 
 sf::Color OptionSelect::getHumanColor()

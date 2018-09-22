@@ -14,7 +14,7 @@ public:
 
 	bool addPoint(int scoreToWin);
 	void updateText(sf::Font &font);
-	void movePaddle(int direction, float delta);
+	void movePaddle(int direction, float delta, bool keyHeld);
 
 	sf::RectangleShape paddle;
 	sf::Color paddleColor;
@@ -34,6 +34,8 @@ private:
 	bool _human;
 	//represents type of paddle, 0 = constant velocity paddle and 1 = paddle with acceleration
 	short _paddleType;
+	float _acceleration = 0.5f;
+	int _prevDirection = 0;
 	//difficulty is a factor of the paddle speed, 1.0 by default
 	float _difficulty;
 

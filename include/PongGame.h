@@ -45,19 +45,30 @@ public:
 
 private:
 	sf::Text _notInPlayText;
+
+	bool _upHeld;
+	bool _downHeld;
+
+	//variables used for game over
+	bool _gameOver = false;
 	sf::Text _endGameMessage;
 	sf::Text _endGameHelp;
+	sf::SoundBuffer _endBuffer;
+	sf::Sound _endSound;
 
-	//stores whether game has ended
-	bool _gameOver = false;
-
-	//stores whether game is paused
+	//variables used for pausing
 	bool _paused = false;
 	bool _spaceHeld;
 	sf::Text _pausedText;
 	sf::Text _pausedHelp;
+	sf::SoundBuffer _pauseBuffer;
+	sf::Sound _pauseSound;
 
-	void _makeEndGameText();
+	//scoring sounds
+	sf::SoundBuffer _scoreBuffer;
+	sf::Sound _scoreSound;
+
+	void _makeEndGameScreen();
 	void _reset();
 	void _updateAI(float delta);
 

@@ -4,6 +4,7 @@
 //includes math constants
 #define _USE_MATH_DEFINES
 
+#include "SFML/Audio.hpp"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 #include "SFML/System.hpp"
@@ -24,7 +25,9 @@ public:
 	int update(float delta, sf::Vector2f left, sf::Vector2f right);
 	void bounceY();
 	void bounceX();
+	bool toggleTrail();
 
+	void initSounds();
 
 	bool isInPlay;
 	sf::CircleShape shape;
@@ -37,7 +40,7 @@ public:
 
 	} trail;
 
-	bool toggleTrail();
+	void _bounceSound();
 
 private:
 	sf::Color _leftColor;
@@ -46,6 +49,14 @@ private:
 	int _velocity;
 	float _acceleration;
 	int _direction;
+
+	//different pitched sounds to be played when the ball bounces
+	sf::SoundBuffer _bounceBuffer;
+	sf::Sound _bounce;
+	//pitches make a Cmaj7 arpeggio
+	float _pitches[8] = { 0.50f, 0.62f, 0.74f, 0.93f, 1.0f, 0.93f, 0.74f, 0.62f};
+	int _pitchIndex = 0;
+
 
 	double _directionAsRadians();
 	bool _isDirectionLeft();

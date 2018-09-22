@@ -1,8 +1,6 @@
 //Ian Wright 9/11/18
 #include "Player.h"
 
-
-
 Player::Player(bool human, short argSide, short paddleType, sf::Color argColor, float difficulty)
 {
 	//assigns passed in values to instance variables for object
@@ -49,13 +47,20 @@ void Player::updateText(sf::Font &font)
 	scoreText.setPosition((400.f - (scoreText.getLocalBounds().width / 1.5f)) + side*140, 30);
 }
 
-void Player::movePaddle(int direction, float delta)
+void Player::movePaddle(int direction, float delta, bool keyHeld)
 {
 	sf::Vector2f pos = paddle.getPosition();
 	if (pos.y >= 85 && pos.y <= 515)
 	{
-		float newPos = pos.y + direction * paddleSpeed * delta * _difficulty;
-		
+		if (keyHeld)
+			_acceleration = (_acceleration < 3.f) ? _acceleration + 0.001f: 3.f;
+		else
+			_acceleration = 0.8f;
+	
+
+		float newPos = pos.y + direction * paddleSpeed * delta * _difficulty * _acceleration;
+
+	
 		if (newPos < 85)
 			newPos = 85;
 		else if (newPos > 515)

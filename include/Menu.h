@@ -2,6 +2,7 @@
 #pragma once
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
+#include "SFML/Audio.hpp"
 #include <vector>
 
 #define numButtons 3
@@ -26,5 +27,10 @@ private:
 	sf::Text _buttonText[numButtons];
 	sf::Text _titleText;
 
+	sf::SoundBuffer _moveBuffer;
+	sf::Sound _move;
+
+	sf::SoundBuffer _selectBuffer;
+	sf::Sound _select;
 
 };

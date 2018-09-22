@@ -1,7 +1,5 @@
 //Ian Wright 9/9/18
 #pragma once	//better way of writing include guards
-#include "SFML/Window.hpp"
-#include "SFML/Graphics.hpp"
 #include "SFML/System.hpp"
 #include "Menu.h"
 #include "OptionSelect.h"

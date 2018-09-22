@@ -22,6 +22,14 @@ Ball::Ball(sf::Color leftCol, sf::Color rightCol)
 	this->reset();
 }
 
+void Ball::initSounds()
+{
+	//loads bounce sounds
+	if (!_bounceBuffer.loadFromFile("../src/assets/boop.wav"))
+		throw;
+	_bounce.setBuffer(_bounceBuffer);
+
+}
 
 Ball::~Ball()
 {
@@ -97,11 +105,12 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 	{
 		sf::Vector2f pos = shape.getPosition();
 
-		if (int(pos.y) <= 25.3f || int(pos.y) >= 574.7f)
+		if (pos.y <= 25.3f || pos.y >= 574.7f)
 			bounceY();
 
 		if (_isDirectionLeft() && pos.x < 33 && pos.x > 31.5f && abs(left.y - pos.y) < 75.f)
 			bounceX();
+		
 		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 768.5f && abs(right.y - pos.y) < 75.f)
 			bounceX();
 
@@ -138,6 +147,8 @@ void Ball::bounceY()
 	_direction = ((360 - _direction) + (rand() % 11) - 5) % 360;
 	//rotate the shape so that any calls to shape.move are in the correct direction
 	shape.setRotation(float(_direction));
+
+	_bounceSound();
 }
 
 /*flips ball's direction over Y axis, changing whether the ball is moving left or right,
@@ -157,6 +168,15 @@ void Ball::bounceX()
 	//increases acceleration so that game speeds up with each successful paddle hit until it reaches 2.0
 	if (_acceleration < 2.f) 
 		_acceleration += 0.05f;
+
+	_bounceSound();
+}
+
+void Ball::_bounceSound()
+{
+	_bounce.setPitch(_pitches[_pitchIndex]);
+	_bounce.play();
+	_pitchIndex = (_pitchIndex == 7) ? 0 : _pitchIndex + 1;
 }
 
 void Ball::_trailUpdate(sf::Vector2f ballPos)

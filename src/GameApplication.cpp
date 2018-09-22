@@ -37,6 +37,9 @@ void Game::init(void)
 	_gameState = Game::InMenu;
 	_mainMenu.init(Game::font);
 
+	//initalize options screen
+	_options.init(Game::font);
+
 	//calls the game loop after initialization
 	 gameLoop();
 
@@ -73,7 +76,6 @@ void Game::processInput()
 			case 1:
 				//special mode is selected so change state to display option select
 				_gameState = Game::Options;
-				_options.init(Game::font);
 				break;
 			case 2:
 				//exit has been selected so quit the game
@@ -127,7 +129,7 @@ void Game::processInput()
 		if (_pong.processInputs(delta))
 			_gameState = Game::InMenu;
 		else
-			_pong.update(delta, 11);
+			_pong.update(delta, 3);
 		
 	}
 }

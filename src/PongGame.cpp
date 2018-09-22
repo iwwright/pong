@@ -92,6 +92,21 @@ void PongGame::init()
 	}
 	
 	objects.ball = Ball(left->paddleColor, right->paddleColor);
+	objects.ball.initSounds();
+
+	//prepares pause and scoring sounds 
+	if (!_pauseBuffer.loadFromFile("../src/assets/pause.wav"))
+		throw;
+	if (!_scoreBuffer.loadFromFile("../src/assets/ding.wav"))
+		throw;
+	_pauseSound.setBuffer(_pauseBuffer);
+	_scoreSound.setBuffer(_scoreBuffer);
+	_scoreSound.setVolume(60.f);
+
+	//waits to load buffer for end game sound until the winner is determined
+	_endSound.setVolume(60.f);
+
+
 }
 
 
@@ -115,10 +130,12 @@ void PongGame::update(float delta, int scoreToWin)
 		//reset paddle locations
 		objects.humanPlayer.paddle.setPosition(400.f + objects.humanPlayer.side * 385, 300);
 		objects.aiPlayer.paddle.setPosition(400.f + objects.aiPlayer.side * 385, 300);
+
+		_scoreSound.play();
 	}
 	
 	if (_gameOver)
-		_makeEndGameText();
+		_makeEndGameScreen();
 
 	_updateAI(delta);
 }
@@ -168,26 +185,35 @@ bool PongGame::processInputs(float delta)
 	if (!_gameOver)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-			objects.humanPlayer.movePaddle(-1, delta);
+		{
+			objects.humanPlayer.movePaddle(-1, delta, _upHeld);
+			_upHeld = true;
+		}
+		else
+			_upHeld = false;
+			
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-			objects.humanPlayer.movePaddle(1, delta);
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !objects.ball.isInPlay)
 		{
-			objects.ball.isInPlay = true;
-			_spaceHeld = true;
+			objects.humanPlayer.movePaddle(1, delta, _downHeld);
+			_downHeld = true;
 		}
+		else
+			_downHeld = false;
 
 		//only lets player toggle pause if the ball is in play
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && objects.ball.isInPlay)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
-			//escape has to be released before toggling pause again
-			if (!_spaceHeld)
+			if (objects.ball.isInPlay && !_spaceHeld)
 			{
-				_spaceHeld = true;
+				if (!_paused)
+					_pauseSound.play();
 				_paused = !_paused;
 			}
+			else
+				objects.ball.isInPlay = true;
+
+			_spaceHeld = true;
 		}
 		else
 			_spaceHeld = false;
@@ -217,16 +243,20 @@ void PongGame::pause()
 		_paused = true;
 }
 
-void PongGame::_makeEndGameText()
+void PongGame::_makeEndGameScreen()
 {
-	//determine winner and set endGameMessage string/color appropriately
+	//determine winner and set endGameMessage string/color/sound appropriately
 	if (objects.humanPlayer.score > objects.aiPlayer.score) 
 	{
+		if (!_endBuffer.loadFromFile("../src/assets/wowIncredible.wav"))
+			throw;
 		_endGameMessage.setString("YOU WIN!");
 		_endGameMessage.setFillColor(sf::Color::Green);
 	}
 	else
 	{
+		if (!_endBuffer.loadFromFile("../src/assets/failure.wav"))
+			throw;
 		_endGameMessage.setString("YOU LOSE!");
 		_endGameMessage.setFillColor(sf::Color::Red);
 	}
@@ -241,6 +271,8 @@ void PongGame::_makeEndGameText()
 	_endGameHelp.setFillColor(sf::Color::White);
 	_endGameHelp.setPosition(400.f - (_endGameHelp.getLocalBounds().width / 1.9f), 315);
 
+	_endSound.setBuffer(_endBuffer);
+	_endSound.play();
 }
 
 void PongGame::_reset()
@@ -266,8 +298,8 @@ void PongGame::_updateAI(float delta)
 	if (abs(paddlePos.x - ballPos.x) < _aiResponseDistance)
 	{
 		if (paddlePos.y < ballPos.y)
-			objects.aiPlayer.movePaddle(1, delta);
+			objects.aiPlayer.movePaddle(1, delta, false);
 		else if (paddlePos.y > ballPos.y)
-			objects.aiPlayer.movePaddle(-1, delta);
+			objects.aiPlayer.movePaddle(-1, delta, false);
 	}
 }

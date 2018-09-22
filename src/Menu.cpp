@@ -40,6 +40,18 @@ void Menu::init(sf::Font menuFont)
 	_buttonText[2].setPosition(400.f - (_buttonText[2].getLocalBounds().width / 2.f), 360);
 
 	_selectionIndex = 0;
+
+	//load all sounds into buffers
+	if (!_moveBuffer.loadFromFile("../src/assets/menuMove.wav"))
+		throw;
+	if (!_selectBuffer.loadFromFile("../src/assets/menuSelect.wav"))
+		throw;
+
+	//set buffer for each sound object
+	_move.setBuffer(_moveBuffer);
+	_select.setBuffer(_selectBuffer);
+	_select.setVolume(70.f);
+
 }
 
 void Menu::draw(sf::RenderWindow &window)
@@ -61,6 +73,7 @@ void Menu::moveUp()
 	_selectionIndex = (_selectionIndex ? _selectionIndex : numButtons) - 1;
 
 	_buttonText[_selectionIndex].setFillColor(sf::Color::Cyan);
+	_move.play();
 }
 
 void Menu::moveDown()
@@ -69,6 +82,7 @@ void Menu::moveDown()
 	_selectionIndex = (_selectionIndex == numButtons - 1 ? 0 : _selectionIndex + 1);
 
 	_buttonText[_selectionIndex].setFillColor(sf::Color::Cyan);
+	_move.play();
 }
 
 int Menu::processInput(sf::Event curEvent)
@@ -80,7 +94,10 @@ int Menu::processInput(sf::Event curEvent)
 		moveDown();
 
 	if (curEvent.key.code == sf::Keyboard::Enter && curEvent.type == sf::Event::KeyReleased)
+	{
+		_select.play();
 		return _selectionIndex;
+	}
 
 	return -1;
 

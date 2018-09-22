@@ -1,5 +1,6 @@
 //Ian Wright 9/18/18
 #pragma once
+#include "SFML/Audio.hpp"
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 
@@ -27,7 +28,7 @@ public:
 	float getSpeed();
 	int getSide();
 
-
+	//used to represent each user changeable parameter for the PongGame
 	struct Option
 	{
 		sf::Text name;
@@ -46,4 +47,13 @@ private:
 	sf::Color _colors[6];
 	Option _allOptions[numOptions];
 
+	//Sound/Buffer for menu movement
+	sf::SoundBuffer _moveBuffer;
+	sf::Sound _move;
+	//Sound/Buffer for selecting an option
+	sf::SoundBuffer _selectBuffer;
+	sf::Sound _select;
+	//Sound/Buffer for going back in the menu
+	sf::SoundBuffer _backBuffer;
+	sf::Sound _back;
 };
