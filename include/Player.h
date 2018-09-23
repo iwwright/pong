@@ -3,13 +3,14 @@
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 
-#define paddleSpeed 100
+#define paddleSpeed 150
+#define accelMin 0.8f
 
 class Player
 {
 public:
 	Player() = default;
-	Player(bool human, short side, short paddleType, sf::Color paddleColor, float difficulty = 1.f);
+	Player(bool human, short side, sf::Color paddleColor, float difficulty = 1.f);
 	~Player();
 
 	bool addPoint(int scoreToWin);
@@ -32,9 +33,8 @@ public:
 private:
 	//whether played is human controlled or not
 	bool _human;
-	//represents type of paddle, 0 = constant velocity paddle and 1 = paddle with acceleration
-	short _paddleType;
-	float _acceleration = 0.5f;
+
+	float _acceleration = accelMin;
 	int _prevDirection = 0;
 	//difficulty is a factor of the paddle speed, 1.0 by default
 	float _difficulty;

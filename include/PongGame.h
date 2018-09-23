@@ -12,33 +12,31 @@
 class PongGame
 {
 public:
-	PongGame() = default;
-	PongGame(sf::Font scoreFont, short side, short type, sf::Color humanColor, sf::Color aiColor, float difficulty=1);
+	PongGame();
 	~PongGame();
 
-	void init();
+	void updateParameters(float speed, short side, sf::Color humanColor, sf::Color aiColor, float difficulty = 1);
 
-	void draw(sf::RenderWindow &window);
-	void update(float delta, int scoreToWin);
-	bool processInputs(float delta);
+	bool update(float delta, int scoreToWin);
+	void reset();
 
-	void pause();
-	sf::Font font;
-	
+	//defines states of the game 
+	enum GameState
+	{
+		Uninitialized, InMenu, Paused, GameOver, Options, InGame, Exiting
+	};
+	GameState state;
+
+	void setState(GameState newState);
+
 	//pointers to the Player object on the corresponding side of the court, assigned in initVars() since Game::_pong is static
 	Player *left;
 	Player *right;
+
 	
 	struct PongObjects
 	{
 		Ball ball;
-
-		//shapes to be ignored by the ball
-		std::vector<sf::RectangleShape> passiveShapes;
-
-		//shapes the ball bounces off of
-		std::vector<sf::RectangleShape> activeShapes;
-
 		Player humanPlayer;
 		Player aiPlayer;
 	} objects;
@@ -46,30 +44,14 @@ public:
 private:
 	sf::Text _notInPlayText;
 
-	bool _upHeld;
-	bool _downHeld;
+	float _gameTimeFactor;
 
-	//variables used for game over
-	bool _gameOver = false;
-	sf::Text _endGameMessage;
-	sf::Text _endGameHelp;
-	sf::SoundBuffer _endBuffer;
-	sf::Sound _endSound;
 
-	//variables used for pausing
-	bool _paused = false;
-	bool _spaceHeld;
-	sf::Text _pausedText;
-	sf::Text _pausedHelp;
-	sf::SoundBuffer _pauseBuffer;
-	sf::Sound _pauseSound;
 
 	//scoring sounds
 	sf::SoundBuffer _scoreBuffer;
 	sf::Sound _scoreSound;
 
-	void _makeEndGameScreen();
-	void _reset();
 	void _updateAI(float delta);
 
 	//AI can move paddle when the distance between its paddle and the ball is less than the below value

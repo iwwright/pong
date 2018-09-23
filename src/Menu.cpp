@@ -1,6 +1,8 @@
 //Ian Wright 9/9/18
 #include "Menu.h"
 
+#include <iostream>
+
 Menu::~Menu()
 {
 }
@@ -87,6 +89,7 @@ void Menu::moveDown()
 
 int Menu::processInput(sf::Event curEvent)
 {
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		moveUp();
 
@@ -98,7 +101,6 @@ int Menu::processInput(sf::Event curEvent)
 		_select.play();
 		return _selectionIndex;
 	}
-
+	//default return value to do nothing
 	return -1;
-
 }

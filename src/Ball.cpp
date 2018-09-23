@@ -67,7 +67,7 @@ void Ball::reset(int side)
 	{
 		for (int i = 0; i < 5; i++)
 		{
-			trail.coordinates[i] = sf::Vector2f(0.0f, 0.0f);
+			trail.coordinates[i] = sf::Vector2f(-10.0f, -10.0f);
 			trail.shapes[i].setFillColor(sf::Color(255, 255, 255, 175 - 30 * i));
 			trail.shapes[i].setRadius(10);
 			trail.shapes[i].setOrigin(sf::Vector2f(10, 10));
@@ -108,10 +108,10 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 		if (pos.y <= 25.3f || pos.y >= 574.7f)
 			bounceY();
 
-		if (_isDirectionLeft() && pos.x < 33 && pos.x > 31.5f && abs(left.y - pos.y) < 75.f)
+		if (_isDirectionLeft() && pos.x < 33 && pos.x > 31.5f && abs(left.y - pos.y) < 80.f) //paddle height is 70 from origin so this is 80 just so the game is more fun
 			bounceX();
 		
-		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 768.5f && abs(right.y - pos.y) < 75.f)
+		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 768.5f && abs(right.y - pos.y) < 80.f)
 			bounceX();
 
 		//now that color is updated through bounce, update trail if it's enabled and if the ball has moved far enough

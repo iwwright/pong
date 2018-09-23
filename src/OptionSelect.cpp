@@ -117,6 +117,7 @@ void OptionSelect::draw(sf::RenderWindow &window)
 
 int OptionSelect::processInput(sf::Event curEvent)
 {
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		moveVertical(-1);
 
@@ -134,7 +135,6 @@ int OptionSelect::processInput(sf::Event curEvent)
 		_select.play();
 		return 0;
 	}
-		
 
 	if (curEvent.key.code == sf::Keyboard::Escape && curEvent.type == sf::Event::KeyPressed)
 	{
@@ -142,6 +142,7 @@ int OptionSelect::processInput(sf::Event curEvent)
 		return 1;
 	}
 
+	//default return value to do nothing
 	return -1;
 }
 

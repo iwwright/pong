@@ -1,12 +1,11 @@
 //Ian Wright 9/11/18
 #include "Player.h"
 
-Player::Player(bool human, short argSide, short paddleType, sf::Color argColor, float difficulty)
+Player::Player(bool human, short argSide, sf::Color argColor, float difficulty)
 {
 	//assigns passed in values to instance variables for object
 	_human = human;
 	side = argSide;
-	_paddleType = paddleType;
 	_difficulty = difficulty;
 	paddleColor = argColor;
 
@@ -32,10 +31,6 @@ Player::~Player()
 bool Player::addPoint(int scoreToWin)
 {
 	score = score + 1;
-	scoreText.setString(std::to_string(score));
-	//position can't be centered until font is set, for whatever reason the bounding box is off center so 1.5 fixes it
-	scoreText.setPosition((400.f - (scoreText.getLocalBounds().width / 1.5f)) + side * 140, 30);
-
 	return (score == scoreToWin);
 }
 
@@ -55,7 +50,7 @@ void Player::movePaddle(int direction, float delta, bool keyHeld)
 		if (keyHeld)
 			_acceleration = (_acceleration < 3.f) ? _acceleration + 0.001f: 3.f;
 		else
-			_acceleration = 0.8f;
+			_acceleration = accelMin;
 	
 
 		float newPos = pos.y + direction * paddleSpeed * delta * _difficulty * _acceleration;

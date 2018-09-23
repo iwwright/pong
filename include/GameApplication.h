@@ -1,43 +1,28 @@
 //Ian Wright 9/9/18
 #pragma once	//better way of writing include guards
-#include "SFML/System.hpp"
-#include "Menu.h"
-#include "OptionSelect.h"
-#include "PongGame.h"
-#include "Player.h"
+#include "PlayerView.h"
 
 #define aspectRatio 1.25f
+#define scoreToWin 3
 
-//header file defines static class to act as global interface for the game
 //only one instance of this class
 class Game
 {
 public:
-	static void init();
-	static sf::Font font;
-	static float gameTimeFactor;
+	void init();
 
 private:
-	static bool isExiting();
-	static void gameLoop();
-	static void processInput();
-	static void updateView();
-	static void preserveAspectRatio(int width, int height);
+	void _gameLoop();
+	void _processEvents();
 
-	//defines states of the game 
-	enum GameState
-	{
-		Uninitialized, InMenu, Options, InGame, Exiting
-	};
+	void _preserveAspectRatio(int width, int height);
 
-	static GameState _gameState;
-	static sf::RenderWindow _window;
-	static sf::View _view;
-	static sf::Clock _clock;
+	sf::RenderWindow _window;
+	sf::View _view;
+	sf::Clock _clock;
 
-	static Menu _mainMenu;
-	static OptionSelect _options;
-	static PongGame _pong;
+	PongGame _logic;
+	PlayerView _playerView;
 
 	
 };
