@@ -1,9 +1,7 @@
 //Ian Wright 9/11/18
+
 #pragma once
-#include "SFML/Window.hpp"
-#include "SFML/Graphics.hpp"
 #include "Ball.h"
-#include "Player.h"
 #include <vector>
 
 #define numPassiveShapes 60
@@ -13,17 +11,16 @@ class PongGame
 {
 public:
 	PongGame();
-	~PongGame();
+	~PongGame() = default;
 
 	void updateParameters(float speed, short side, sf::Color humanColor, sf::Color aiColor, float difficulty = 1);
-
 	bool update(float delta, int scoreToWin);
 	void reset();
 
 	//defines states of the game 
 	enum GameState
 	{
-		Uninitialized, InMenu, Paused, GameOver, Options, InGame, Exiting
+		InMenu, Paused, GameOver, Options, InGame, Exiting
 	};
 	GameState state;
 
@@ -33,7 +30,7 @@ public:
 	Player *left;
 	Player *right;
 
-	
+	//Stores relevant pong objects that have an sf::shape
 	struct PongObjects
 	{
 		Ball ball;
@@ -42,18 +39,14 @@ public:
 	} objects;
 
 private:
+	void _updateAI(float delta);
+	//AI can move paddle when the distance between its paddle and the ball is less than the below value
+	float _aiResponseDistance;
+
 	sf::Text _notInPlayText;
-
 	float _gameTimeFactor;
-
-
 
 	//scoring sounds
 	sf::SoundBuffer _scoreBuffer;
 	sf::Sound _scoreSound;
-
-	void _updateAI(float delta);
-
-	//AI can move paddle when the distance between its paddle and the ball is less than the below value
-	float _aiResponseDistance;
 };

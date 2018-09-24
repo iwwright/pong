@@ -5,33 +5,32 @@
 #define _USE_MATH_DEFINES
 
 #include "SFML/Audio.hpp"
-#include "SFML/Window.hpp"
-#include "SFML/Graphics.hpp"
-#include "SFML/System.hpp"
+#include "Player.h" //just for paddle speed and acceleration constants
 #include <cmath>
 #include <random>
 
 #define maxInitialAngle 25
+#define maxBounceAngle 70 //maximum possible value to add/subtract to balls reflected angle based on paddle velocity
 
 class Ball
 {
 public:
 	Ball() = default;
+	~Ball() = default;
 	Ball(sf::Color leftCol, sf::Color rightCol);
-	~Ball();
 
 	void reset(int side = (rand() % 2));
 	void draw(sf::RenderWindow &window);
-	int update(float delta, sf::Vector2f left, sf::Vector2f right);
+	int update(float delta, sf::Vector2f left, sf::Vector2f right, float leftVelocity, float rightVelocity);
 	void bounceY();
-	void bounceX();
+	void bounceX(float velocity);
 	bool toggleTrail();
 
 	void initSounds();
 
 	bool isInPlay;
 	sf::CircleShape shape;
-
+	//trail behind the ball because it looks cool and also helps show ball speed
 	struct BallTrail
 	{
 		bool enabled;
@@ -57,10 +56,8 @@ private:
 	float _pitches[8] = { 0.50f, 0.62f, 0.74f, 0.93f, 1.0f, 0.93f, 0.74f, 0.62f};
 	int _pitchIndex = 0;
 
-
 	double _directionAsRadians();
 	bool _isDirectionLeft();
 	void _trailUpdate(sf::Vector2f ballPos);
 	float _distance(sf::Vector2f u, sf::Vector2f v);
-
 };

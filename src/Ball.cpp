@@ -1,6 +1,7 @@
 //Ian Wright 9/15/18
+//Ball.cpp: Class representing ball, starts in center of court and doesn't move until Player hits space
+
 #include "Ball.h"
-#include <iostream>
 
 Ball::Ball(sf::Color leftCol, sf::Color rightCol)
 {
@@ -31,13 +32,10 @@ void Ball::initSounds()
 
 }
 
-Ball::~Ball()
-{
-}
-
 
 /*resets ball's position attributes and sets the ball as out of play, side is randomly selected by default
-when side = 0 the ball moves to right and when side = 1 the ball moves to the left*/
+when side = 0 the ball moves to right and when side = 1 the ball moves to the left.
+side should correspond to the player that just scored if called after a point is scored*/
 void Ball::reset(int side)
 {
 	shape.setPosition(sf::Vector2f(400, 300));
@@ -77,7 +75,6 @@ void Ball::reset(int side)
 
 }
 
-
 void Ball::draw(sf::RenderWindow &window)
 {
 	if (isInPlay && trail.enabled)
@@ -86,10 +83,8 @@ void Ball::draw(sf::RenderWindow &window)
 		for (int i = 1; i < 5; i++)
 			window.draw(trail.shapes[i]);
 	}
-
 	//draw ball
 	window.draw(shape);
-
 }
 
 /*Uses ball's position to determine whether a bounce should occur and then moves the ball after updating _direction,
@@ -99,20 +94,20 @@ delta - product of delta between gameLoop calls and gameTimeFactor
 left  - position of left paddle
 right - position of right paddle
 */
-int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
+int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right , float leftVelocity, float rightVelocity)
 {
 	if (isInPlay)
 	{
 		sf::Vector2f pos = shape.getPosition();
 
-		if (pos.y <= 25.3f || pos.y >= 574.7f)
+		if (pos.y <= 25 || pos.y >= 575)
 			bounceY();
 
-		if (_isDirectionLeft() && pos.x < 33 && pos.x > 31.5f && abs(left.y - pos.y) < 80.f) //paddle height is 70 from origin so this is 80 just so the game is more fun
-			bounceX();
+		if (_isDirectionLeft() && pos.x < 33 && pos.x > 25 && abs(left.y - pos.y) < 85.f) //paddle height is 70 from origin with a ball height of 10 so this is 85 just so the game is more fun
+			bounceX(leftVelocity);
 		
-		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 768.5f && abs(right.y - pos.y) < 80.f)
-			bounceX();
+		else if (!_isDirectionLeft() && pos.x > 767 && pos.x < 773 && abs(right.y - pos.y) < 85.f)
+			bounceX(rightVelocity);
 
 		//now that color is updated through bounce, update trail if it's enabled and if the ball has moved far enough
 		if (trail.enabled && _distance(pos, trail.coordinates[0]) > 4.f * _acceleration)
@@ -120,6 +115,7 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 
 		//move ball in new direction
 		shape.move(float(cos(_directionAsRadians())  * delta * _velocity * _acceleration), float(sin(_directionAsRadians())  * delta * _velocity * _acceleration));
+		pos = shape.getPosition();
 
 		//return value indicating what to do if someone has scored
 		if (pos.x <= 2)
@@ -141,10 +137,34 @@ int Ball::update(float delta, sf::Vector2f left, sf::Vector2f right)
 
 
 /*flips ball's direction over X axis, changing whether the ball is moving up or down,
-adds a small random perturbation (between -5 and +5 degrees) for an element of uncertainty*/
+removed randomness to avoid the ball going backwards*/
 void Ball::bounceY()
 {
-	_direction = ((360 - _direction) + (rand() % 11) - 5) % 360;
+	//_direction = ((720 - _direction) + (rand() % 11) - 5) % 360;
+	_direction = (720 - _direction) % 360;
+
+	//limits how close direction can be to 90 and 270
+	if (_isDirectionLeft())
+	{
+		if (_direction < 100)
+			_direction = 100;
+		if (_direction > 260)
+			_direction = 260;
+	}
+	else
+	{
+		if (_direction > 80 && _direction < 91)
+			_direction = 80;
+		if (_direction > 269 && _direction < 280)
+			_direction = 280;
+	}
+	//avoids bugs with multiple bounces
+	sf::Vector2f pos = shape.getPosition();
+	if (pos.y < 25)
+		shape.setPosition(pos.x, 25.f);
+	else if (pos.y > 575)
+		shape.setPosition(pos.x, 575.f);
+
 	//rotate the shape so that any calls to shape.move are in the correct direction
 	shape.setRotation(float(_direction));
 
@@ -153,9 +173,13 @@ void Ball::bounceY()
 
 /*flips ball's direction over Y axis, changing whether the ball is moving left or right,
 adds a small random perturbation (between -5 and +5 degrees) for an element of uncertainty*/
-void Ball::bounceX()
+void Ball::bounceX(float velocity)
 {
-	_direction = ((180 - _direction + 360) + ((rand() % 11) - 5)) % 360;
+	//computes direction of ball without paddle velocity
+	_direction = (180 - _direction + 360) + ((rand() % 11) - 5);
+	//uses paddle speed/direction to affect angle 
+	_direction = int(((velocity * maxBounceAngle) / (paddleSpeed * accelMax)) + _direction) % 360;
+
 	//rotate the shape so that any calls to shape.move are in the correct direction
 	shape.setRotation(float(_direction));
 
@@ -172,6 +196,7 @@ void Ball::bounceX()
 	_bounceSound();
 }
 
+//plays sound when ball bounces, cycles through a set of pitches so ijt isn't just a single repetitive sound
 void Ball::_bounceSound()
 {
 	_bounce.setPitch(_pitches[_pitchIndex]);
@@ -179,6 +204,7 @@ void Ball::_bounceSound()
 	_pitchIndex = (_pitchIndex == 7) ? 0 : _pitchIndex + 1;
 }
 
+//updates coordinates of the ball's trail and the color of each part
 void Ball::_trailUpdate(sf::Vector2f ballPos)
 {
 	sf::Color ballCol = shape.getFillColor();
@@ -200,24 +226,26 @@ void Ball::_trailUpdate(sf::Vector2f ballPos)
 	}
 }
 
-
+//allows you to turn the ball trail on/off but it should be on since the trail is cool
 bool Ball::toggleTrail()
 {
 	trail.enabled = !(trail.enabled);
 	return trail.enabled;
 }
 
-
+//converts _direction into radians for the <cmath> functions
 double Ball::_directionAsRadians()
 {
 	return (_direction * M_PI / 180.0);
 }
 
+//returns true if the ball is going to the left and false otherwise
 bool Ball::_isDirectionLeft()
 {
 	return (_direction >= 90 && _direction <= 270);
 }
 
+//returns euclidean distance between to points in the court, result is in pixels
 float Ball::_distance(sf::Vector2f u, sf::Vector2f v)
 {
 	return sqrt(pow(u.x - v.x, 2) + pow(u.y - v.y, 2));

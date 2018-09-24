@@ -1,12 +1,9 @@
 //Ian Wright 9/22/18
+//PlayerView.cpp: Processes user input and draws all visuals to the screen
 
 #include "PlayerView.h"
-#include <iostream>
 
-PlayerView::~PlayerView()
-{
-}
-
+/*Initializes PlayerView object by preparing  all shapes, text, and sounds*/
 void PlayerView::init(PongGame* gameLogic)
 {
 	//load font
@@ -14,17 +11,15 @@ void PlayerView::init(PongGame* gameLogic)
 		throw;
 
 	logic = gameLogic;
-
 	menu.init(font);
 	options.init(font);
 
 	_initShapes();
 	_initText();
 	_initSounds();
-
-
 }
 
+/*Draws all necessary shapes/text to the window that is passed in*/
 void PlayerView::draw(sf::RenderWindow &window)
 {
 	//always a black background
@@ -41,6 +36,7 @@ void PlayerView::draw(sf::RenderWindow &window)
 	case PongGame::Exiting:
 		break;
 	default:
+		//InGame || GameOver || Paused
 		window.draw(logic->objects.humanPlayer.scoreText);
 		window.draw(logic->objects.aiPlayer.scoreText);
 
@@ -67,14 +63,14 @@ void PlayerView::draw(sf::RenderWindow &window)
 				window.draw(_pausedText);
 				window.draw(_pausedHelp);
 			}
-
 		}
 		break;
 	}
-	
 	window.display();
 }
 
+/*Both the Menu and Option Select require enter to be released so this method is called in Game::_processEvents()
+since sf::Events are unions. Handles input for Both Menu and OptionSelect*/
 void PlayerView::processEvents(sf::Event curEvent)
 {
 	//get current game state
@@ -91,7 +87,7 @@ void PlayerView::processEvents(sf::Event curEvent)
 			logic->updateParameters(_gameTimeFactor, -1, sf::Color::Blue, sf::Color::Red, 1.0f);
 			break;
 		case 1:
-			//special mode is selected so change state to display option select
+			//custom mode is selected so change state to display option select
 			logic->setState(PongGame::Options);
 			break;
 		case 2:
@@ -100,7 +96,6 @@ void PlayerView::processEvents(sf::Event curEvent)
 			break;
 		}
 		break;
-
 
 	case PongGame::Options:
 		switch (options.processInput(curEvent))
@@ -126,6 +121,8 @@ void PlayerView::processEvents(sf::Event curEvent)
 	}
 }
 
+/*Called in Game::_gameLoop() so it can directly reads keyboard states and respond to user input in a smooth 
+manner. Updates logic->state appropriately*/
 void PlayerView::processKeyboard(float delta)
 {
 	//get current game state
@@ -134,7 +131,6 @@ void PlayerView::processKeyboard(float delta)
 	
 	//pausing stops any moving objects
 	case PongGame::Paused:
-
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			if (!_spaceHeld)
@@ -147,11 +143,12 @@ void PlayerView::processKeyboard(float delta)
 		//allow player to quit if game is paused
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			logic->setState(PongGame::InMenu);
-
 		break;
 
 	case PongGame::InGame:
 		delta *= _gameTimeFactor;
+		//set velocity to zero so that way if move is not called, it remains 0 when calculating ball angle
+		logic->objects.humanPlayer.velocity = 0.f;
 
 		//moves paddle up, keeps track of if the key is held for paddle acceleration
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -189,10 +186,9 @@ void PlayerView::processKeyboard(float delta)
 
 		break;
 
-
 	case PongGame::GameOver:
 		//restart the game
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
 		{
 			logic->reset();
 			logic->objects.humanPlayer.updateText(font);
@@ -204,17 +200,15 @@ void PlayerView::processKeyboard(float delta)
 			logic->setState(PongGame::InMenu);
 		break;
 	}
-
-
 }
 
-
+/*Purpose is to play the score sound and update the text for each player*/
 void PlayerView::score()
 {
 	_scoreSound.play();
 	logic->objects.humanPlayer.updateText(font);
 	logic->objects.aiPlayer.updateText(font);
-
+	//prepare gameover screen before drawing it
 	if (logic->state == PongGame::GameOver)
 		_makeEndGameScreen();
 }
@@ -243,7 +237,6 @@ void PlayerView::_initShapes()
 		right.setPosition(800.f - (right.getLocalBounds().width / 2.0f), 30 * i + 7.5f);
 		_backgroundShapes.push_back(right);
 	}
-
 	//creates edges of court
 	for (int i = 0; i < 2; i++)
 	{
@@ -294,7 +287,7 @@ void PlayerView::_initSounds()
 	_endSound.setVolume(60.f);
 }
 
-
+/*Performs necessary prepartions for the GameOver screen*/
 void PlayerView::_makeEndGameScreen()
 {
 	//determine winner and set endGameMessage string/color/sound appropriately

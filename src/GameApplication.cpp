@@ -1,19 +1,17 @@
 //Ian Wright 9/9/18
 //GameApplication.cpp: defines Game class for use as Game Application Layer
+
 #include "GameApplication.h"
 
 void Game::_gameLoop()
 {
 	_clock.restart(); // starts the clock
-
-	//call game loop until the state is exiting, then close
 	while (_logic.state != PongGame::Exiting)
 	{
 		_processEvents();
 
 		//returns elapsed time and resets the clock
 		float delta = _clock.restart().asSeconds();
-		
 		_playerView.processKeyboard(delta);
 
 		if (_logic.update(delta, scoreToWin))
@@ -21,18 +19,14 @@ void Game::_gameLoop()
 
 		_playerView.draw(_window);
 	}
-	
-
 }
 
 void Game::init(void)
 {
-
 	//create main window and view for resizing, uses default viewport
 	_window.create(sf::VideoMode(800, 600, 32), "Pong");//, sf::Style::Close);
 	_view.reset(sf::FloatRect(0, 0, 800, 600));
 	_window.setView(_view);
-
 
 	//creates logic and initializes PlayerView with a pointer to logic
 	_logic = PongGame();
@@ -45,7 +39,8 @@ void Game::init(void)
 	_window.close();
 }
 
-
+/* Manages all window related events (resizing, closing) and calls _playerView.processEvents(Event) 
+in order to respond to events on the main menu and option select screen*/
 void Game::_processEvents()
 {
 	sf::Event Event;
@@ -67,7 +62,8 @@ void Game::_processEvents()
 	}
 }
 
-
+/*Called  by _processEvents() in order to change the viewport's aspect ratio when the window is resized, 
+this avoids having to change any of the draw methods since the 800x600 pixel mapping is preserved*/
 void Game::_preserveAspectRatio(int width, int height)
 {
 	sf::FloatRect viewport;
@@ -79,7 +75,6 @@ void Game::_preserveAspectRatio(int width, int height)
 	{
 		viewport.width = (height * aspectRatio) / width;
 		viewport.left = (1.f - viewport.width) / 2.f;
-
 	}
 	else if (width < height * aspectRatio)
 	{
@@ -90,4 +85,3 @@ void Game::_preserveAspectRatio(int width, int height)
 	_view.setViewport(viewport);
 	_window.setView(_view);
 }
-

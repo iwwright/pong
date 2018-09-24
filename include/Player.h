@@ -5,13 +5,14 @@
 
 #define paddleSpeed 150
 #define accelMin 0.8f
+#define accelMax 3.f
 
 class Player
 {
 public:
 	Player() = default;
+	~Player() = default;
 	Player(bool human, short side, sf::Color paddleColor, float difficulty = 1.f);
-	~Player();
 
 	bool addPoint(int scoreToWin);
 	void updateText(sf::Font &font);

@@ -1,14 +1,17 @@
 //Ian Wright 9/9/18
-#pragma once	//better way of writing include guards
+#pragma once
+
 #include "PlayerView.h"
 
 #define aspectRatio 1.25f
-#define scoreToWin 3
+#define scoreToWin 11
 
-//only one instance of this class
 class Game
 {
 public:
+	Game() = default;
+	~Game() = default;
+
 	void init();
 
 private:
@@ -23,6 +26,4 @@ private:
 
 	PongGame _logic;
 	PlayerView _playerView;
-
-	
 };
